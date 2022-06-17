@@ -8,6 +8,7 @@ var port = process.env.PORT || 3000;
 // enable CORS (https://en.wikipedia.org/wiki/Cross-origin_resource_sharing)
 // so that your API is remotely testable by FCC 
 var cors = require('cors');
+const { request } = require('express');
 app.use(cors({optionsSuccessStatus: 200}));  // some legacy browsers choke on 204
 
 // http://expressjs.com/en/starter/static-files.html
@@ -19,7 +20,7 @@ app.get("/", function (req, res) {
 });
 
 app.get("/timestamp", function (req, res) {
-  res.sendFile(__dirname + '/views/timestamp.html');
+  res. sendFile(__dirname + '/views/timestamp.html');
 });
 
 app.get("/requestHeaderParser", function (req, res) {
@@ -37,6 +38,17 @@ app.get("/api/", function(req, res){
     "unix": now.getTime(),
     "utc": now.toUTCString()
   });
+});
+
+
+app.get("/api/whoami", function(req, res){
+  res.json({
+    "value": Object.keys(req),
+    "ipaddress": req.connection.remoteAddress,
+    "language":req.headers["accept-language"],
+    "software":req.headers["user-agent"],
+    "req-headers": req.headers["user-agent"]
+  })
 });
 
 app.get("/api/:date", function(req, res){

@@ -13,7 +13,8 @@
 		"body-parser": "^1.20.0",
 		"cors": "^2.8.0",
 		"ejs": "^3.1.5",
-		"express": "^4.15.2"
+		"express": "^4.15.2",
+		"valid-url": "1.0.9"
 	},
 	"devDependencies": {
 		"got": "^11.3.0",

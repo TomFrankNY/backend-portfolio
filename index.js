@@ -64,6 +64,8 @@ app.get('api/shorturl/:id', function(req, res) {
 
 })
 
+app.use('/public', express.static(`${process.cwd()}/public`));
+
 // header request project
 app.get("/api/whoami", function(req, res){
   res.json({

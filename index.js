@@ -6,6 +6,7 @@ var express = require('express');
 var app = express();
 var port = process.env.PORT || 3000;
 var bodyParser = require('body-parser');
+var validUrl = require('valid-url')
 // enable CORS (https://en.wikipedia.org/wiki/Cross-origin_resource_sharing)
 // so that your API is remotely testable by FCC 
 var cors = require('cors');
@@ -51,8 +52,11 @@ app.use(bodyParser.urlencoded({ extended: false}));
 app.post('/api/shorturl', function(req, res) {
   const url = req.body.url;
   // check if url is valid
-
-  counter += 1;
+  if (!validUrl(url)) {
+    res.send({ error: 'invalid url'})
+    return;
+  }
+  counter += 1;  
   console.log(url);
   shortenedUrls[counter] = url
   console.log(shortenedUrls);

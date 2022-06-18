@@ -52,7 +52,7 @@ app.use(bodyParser.urlencoded({ extended: false}));
 app.post('/api/shorturl', function(req, res) {
   const url = req.body.url;
   // check if url is valid
-  if (!isUrl.isUri(url)) {
+  if (!isUrl(url)) {
     res.send({ error: 'invalid url'});
     return;
   }

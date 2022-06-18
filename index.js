@@ -12,7 +12,6 @@ var cors = require('cors');
 const { request } = require('express');
 app.use(cors({optionsSuccessStatus: 200}));  // some legacy browsers choke on 204
 
-app.use(bodyParser.urlencoded({ extended: false}));
 
 // http://expressjs.com/en/starter/static-files.html
 app.use(express.static('public'));
@@ -21,32 +20,33 @@ app.use('/public', express.static(`${process.cwd()}/public`));
 
 // http://expressjs.com/en/starter/basic-routing.html
 // app.get("/", function (req, res) {
-//   res.sendFile(__dirname + '/views/index.html');
-// });
-
-app.get("/timestamp", function (req, res) {
-  res. sendFile(__dirname + '/views/timestamp.html');
-});
-
-app.get("/requestHeaderParser", function (req, res) {
-  res.sendFile(__dirname + '/views/requestHeaderParser.html');
-});
-
-app.get("/urlShortenerMicroservice", function (req, res) {
-  res.sendFile(__dirname + '/views/urlShortenerMicroservice.html');
-});
- 
-
-// your first API endpoint... 
-app.get("/api/hello", function (req, res) {
-  res.json({greeting: 'hello API'});
-});
-
-
-// short url project
-let counter = 0;
-let shortenedUrls = {};
-
+  //   res.sendFile(__dirname + '/views/index.html');
+  // });
+  
+  app.get("/timestamp", function (req, res) {
+    res. sendFile(__dirname + '/views/timestamp.html');
+  });
+  
+  app.get("/requestHeaderParser", function (req, res) {
+    res.sendFile(__dirname + '/views/requestHeaderParser.html');
+  });
+  
+  app.get("/urlShortenerMicroservice", function (req, res) {
+    res.sendFile(__dirname + '/views/urlShortenerMicroservice.html');
+  });
+  
+  
+  // your first API endpoint... 
+  app.get("/api/hello", function (req, res) {
+    res.json({greeting: 'hello API'});
+  });
+  
+  
+  // short url project
+  let counter = 0;
+  let shortenedUrls = {};
+  
+app.use(bodyParser.urlencoded({ extended: false}));
 
 app.post('/api/shorturl', function(req, res) {
   const url = req.body.url;
@@ -63,7 +63,6 @@ app.get('/api/shorturl/:id', function(req, res) {
   const id = req.params.id;
   const url = shortenedUrls[id];
   res.redirect(url);
-  console.log(url)
 })
 
 

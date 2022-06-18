@@ -15,10 +15,12 @@ app.use(cors({optionsSuccessStatus: 200}));  // some legacy browsers choke on 20
 // http://expressjs.com/en/starter/static-files.html
 app.use(express.static('public'));
 
+app.use('/public', express.static(`${process.cwd()}/public`));
+
 // http://expressjs.com/en/starter/basic-routing.html
-app.get("/", function (req, res) {
-  res.sendFile(__dirname + '/views/index.html');
-});
+// app.get("/", function (req, res) {
+//   res.sendFile(__dirname + '/views/index.html');
+// });
 
 app.get("/timestamp", function (req, res) {
   res. sendFile(__dirname + '/views/timestamp.html');
@@ -38,11 +40,12 @@ app.get("/api/hello", function (req, res) {
   res.json({greeting: 'hello API'});
 });
 
+app.use(bodyParser.urlencoded({ extended: false}));
+
 // short url project
 let counter = 0;
 let shortenedUrls = {};
 
-app.use(bodyParser.urlencoded({ extended: false}));
 
 app.post('/api/shorturl', function(req, res) {
   const url = req.body.url;
@@ -62,7 +65,6 @@ app.get('api/shorturl/:id', function(req, res) {
 
 })
 
-// app.use('/public', express.static(`${process.cwd()}/public`));
 
 // header request project
 app.get("/api/whoami", function(req, res){

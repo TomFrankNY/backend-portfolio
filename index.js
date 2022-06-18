@@ -40,11 +40,9 @@ app.get("/api/hello", function (req, res) {
 
 // short url project
 let counter = 0;
-let shortenedUrls = {
+let shortenedUrls = {};
 
-};
-
-app.use(bodyParser.urlencoded({ extended: false}))
+app.use(bodyParser.urlencoded({ extended: false}));
 
 app.post('/api/shorturl', function(req, res) {
   const url = req.body.url;
@@ -55,7 +53,7 @@ app.post('/api/shorturl', function(req, res) {
   shortenedUrls[counter] = url
   console.log(shortenedUrls);
   res.send({original_url: req.body.url, short_url: counter});
-})
+}) 
 
 app.get('api/shorturl/:id', function(req, res) {
   const id = req.params.id;
@@ -64,7 +62,7 @@ app.get('api/shorturl/:id', function(req, res) {
 
 })
 
-app.use('/public', express.static(`${process.cwd()}/public`));
+// app.use('/public', express.static(`${process.cwd()}/public`));
 
 // header request project
 app.get("/api/whoami", function(req, res){

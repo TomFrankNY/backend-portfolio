@@ -52,10 +52,7 @@ app.use(bodyParser.urlencoded({ extended: false}));
 app.post('/api/shorturl', function(req, res) {
   const url = req.body.url;
   // check if url is valid
-  if (!isUrl(url)) {
-    res.send({ error: 'invalid url'});
-    return;
-  }
+  
   counter += 1;  
   console.log(url);
   shortenedUrls[counter] = url
@@ -68,6 +65,11 @@ app.get('/api/shorturl/:id', function(req, res) {
   const url = shortenedUrls[id];
   res.redirect(url);
 })
+
+if (!isUrl(url)) {
+  res.send({ error: 'invalid url'});
+  return;
+}
 
 
 // header request project

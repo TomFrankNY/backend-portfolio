@@ -12,6 +12,8 @@ var cors = require('cors');
 const { request } = require('express');
 app.use(cors({optionsSuccessStatus: 200}));  // some legacy browsers choke on 204
 
+app.use(bodyParser.urlencoded({ extended: false}));
+
 // http://expressjs.com/en/starter/static-files.html
 app.use(express.static('public'));
 
@@ -33,14 +35,13 @@ app.get("/requestHeaderParser", function (req, res) {
 app.get("/urlShortenerMicroservice", function (req, res) {
   res.sendFile(__dirname + '/views/urlShortenerMicroservice.html');
 });
-
+ 
 
 // your first API endpoint... 
 app.get("/api/hello", function (req, res) {
   res.json({greeting: 'hello API'});
 });
 
-app.use(bodyParser.urlencoded({ extended: false}));
 
 // short url project
 let counter = 0;
@@ -58,11 +59,11 @@ app.post('/api/shorturl', function(req, res) {
   res.send({original_url: req.body.url, short_url: counter});
 }) 
 
-app.get('api/shorturl/:id', function(req, res) {
+app.get('/api/shorturl/:id', function(req, res) {
   const id = req.params.id;
-  const url = shortenedUrls[id]
+  const url = shortenedUrls[id];
   res.redirect(url);
-
+  console.log(url)
 })
 
 

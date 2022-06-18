@@ -5,6 +5,7 @@
 var express = require('express');
 var app = express();
 var port = process.env.PORT || 3000;
+var bodyParser = require('body-parser');
 // enable CORS (https://en.wikipedia.org/wiki/Cross-origin_resource_sharing)
 // so that your API is remotely testable by FCC 
 var cors = require('cors');
@@ -27,11 +28,51 @@ app.get("/requestHeaderParser", function (req, res) {
   res.sendFile(__dirname + '/views/requestHeaderParser.html');
 });
 
+app.get("/urlShortenerMicroservice", function (req, res) {
+  res.sendFile(__dirname + '/views/urlShortenerMicroservice.html');
+});
+
+
 // your first API endpoint... 
 app.get("/api/hello", function (req, res) {
   res.json({greeting: 'hello API'});
 });
 
+// short url project
+let counter = 0;
+let shortenedUrls = {
+
+};
+
+app.use(bodyParser.urlencoded({ extended: false}))
+
+app.post('/api/shorturl', function(req, res) {
+  const url = req.body.url;
+  // check if url is valid
+
+  counter += 1;
+  console.log(url);
+  shortenedUrls[counter] = url
+  console.log(shortenedUrls);
+  res.send({original_url: req.body.url, short_url: counter});
+})
+
+app.get('api/shorturl/:id', function(req, res) {
+  const id = req.params.id;
+  const url = shortenedUrls[id]
+  res.redirect(url);
+
+})
+
+// header request project
+app.get("/api/whoami", function(req, res){
+  res.json({
+    "ipaddress": req.connection.remoteAddress,
+    "language":req.headers["accept-language"],
+    "software":req.headers["user-agent"]
+  })
+});
+// timestamp project
 app.get("/api/", function(req, res){
   var now = new Date()
   res.json({
@@ -40,14 +81,6 @@ app.get("/api/", function(req, res){
   });
 });
 
-
-app.get("/api/whoami", function(req, res){
-  res.json({
-    "ipaddress": req.connection.remoteAddress,
-    "language":req.headers["accept-language"],
-    "software":req.headers["user-agent"]
-  })
-});
 
 app.get("/api/:date", function(req, res){
   let dateString = req.params.date;

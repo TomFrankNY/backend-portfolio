@@ -5,28 +5,30 @@
 var express = require('express');
 var app = express();
 var port = process.env.PORT || 3000;
-var bodyParser = require('body-parser');
-var isUrl = require('is-url')
+// var bodyParser = require('body-parser');
+var isUrl = require('is-url');
 var cors = require('cors');
-var mongoose = require('mongoose')
+var mongoose = require('mongoose');
 const { Schema } = require('mongoose');
 require('dotenv').config()
 
 mongoose.connect(process.env.MONGO_URL, {
   useUnifiedTopology: true,
   useNewUrlParser: true,
-});
-
-app.use(cors({optionsSuccessStatus: 200}));  // some legacy browsers choke on 204
+}, () => { console.log("Connected to MONGO BONGO DB")}
+);
+app.use(cors())
+// app.use(cors({optionsSuccessStatus: 200}));  // some legacy browsers choke on 204
 app.use(express.static('public'));
-app.use(bodyParser.urlencoded({ extended: false}));
+// app.use(bodyParser.urlencoded({ extended: false}));
 app.use('/public', express.static(`${process.cwd()}/public`));
+app.use(express.urlencoded({ extended: false }))
+app.use(express.json())
 
 // http://expressjs.com/en/starter/basic-routing.html
 app.get("/", function (req, res) {
-    res.sendFile(__dirname + '/views/index.html');
-  });  
-  
+  res.sendFile(__dirname + '/views/index.html');
+});   
  
   app.get("/timestamp", function (req, res) {
     res. sendFile(__dirname + '/views/timestamp.html');
@@ -44,168 +46,288 @@ app.get("/", function (req, res) {
     res.sendFile(__dirname + '/views/exerciseTracker.html');
   });
   
-  
+ 
+
   // your first API endpoint... 
   app.get("/api/hello", function (req, res) {
     res.json({greeting: 'hello API'});
   });
   
-// exercise tracker project
-const userSchema = new Schema({
-  username: {
-    type: String,
-    required: true
-  },
-  logs: [{
-    date: String,
-    duration: Number,
-    description: String
-  }],
-  count: Number
+// // exercise tracker project
+
+const userSchema = new Schema ({
+  "username": String,
 })
 
-const User = mongoose.model("User", userSchema);
-// const Exercise = mongoose.model("Exercise", exerciseSchema);
-
-app.route("/api/users")
-  .post ((req, res) => {
-    const username = req.body.username
-    const user = new User ({ username })
-    user.save((err, data) => {
-      if (err) {
-        res.json({error: err})
-      }
-      res.json(data)
-    })
+const exerciseSchema = new Schema({
+ "username": String,
+ "date": Date,
+ "duration": Number,
+ "description": String,
 })
 
-  .get((req, res) => {
-    User.find((err, data) => {
-      if (data) {
-        res.json(data)
+const logSchema = new Schema({
+ "username": String,
+ "count": Number,
+ "log": Array,
+})
+
+const UserInfo = mongoose.model('userInfo', userSchema);
+const ExerciseInfo = mongoose.model('exerciseInfo', exerciseSchema);
+const LogInfo = mongoose.model('logInfo', logSchema);
+
+app.post('/api/users', (req, res) => {
+  UserInfo.find({ "username": req.body.username}, (err, userData) => {
+    if (err) {
+      console.log("Error with server=> ", err)
+    } else {
+      if (userData.length === 0) {
+        const test = new UserInfo({
+          "_id": req.body.id,
+          "username": req.body.username,
+        })
+
+        test.save((err, data) => {
+          if (err) {
+            console.log("Error saving data=> ", err)
+          } else {
+            res.json({
+              "_id": data.id,
+              "username": data.username,
+            })
+          }
+        })
+      } else {
+        res.send("Username already Exists")
       }
-    })
+    }
   })
+})
 
-  app.post('/api/users/:_id/exercises', (req, res) =>{
-    const { description } = req.body
-    const duration = parseInt(req.body.duration)
-    const date = req.body.date ? "Mon Jan 02 1991" : "Mon Jan 01 2020"
-    const id = req.params._id
+  // #2
+app.post('/api/users/:_id/exercises', (req, res) => {
+  let idJson = { "id": req.params._id};
+  let checkedDate = new Date(req.body.date);
+  let idToCheck = idJson.id;
 
-  const exercise = {
-    date,
-    duration,
-    description,
+  let noDateHandler = () => {
+    if (checkedDate instanceof Date && !isNaN(checkedDate)) {
+      return checkedDate
+    } else {
+      checkedDate = new Date();
+    }
   }
 
-    User.findByIdAndUpdate(id, { $push: { logs: exercise} }, {new:true}, (err, user) => {
-    if (user){
-      const updatedExercise = {
-        _id: id,
-        username: user.username,
-        ...exercise
-      };
+  UserInfo.findById(idToCheck, (err, data) => {
+    noDateHandler(checkedDate);
+
+    if (err) {
+      console.log("error with id=> ", err);
+    } else {
+      const test = new ExerciseInfo({
+        "username": data.username,
+        "description": req.body.description,
+        "duration": req.body.duration,
+        "date": checkedDate.toDateString(),
+      })
+
+      test.save((err, data) => {
+        if (err) {
+          console.log("error saving=> ", err);
+        } else {
+          console.log("saved exercise successfully");
+          res.json({
+            "_id": idToCheck,
+            "username": data.username,
+            "description": data.description,
+            "duration": data.duration,
+            "date": data.date.toDateString(),
+          })
+        }
+      })
     }
-    })
   })
-    // User.findById(id, (err, user) => {
-    //   if (user) {
-    //     const username = user.username;
-    //     const exercise = {
-    //       description,
-    //       duration,
-    //       date,
-    //     }
+})
 
-    //     if (!user.log) {
-    //       user.log = [exercise]
-    //     }
-        
-    //       user.log.push(exercise)
-        
-    //     user.save((err, data) => {
-    //       if (data) {
-    //         exercise.username = username
-    //         exercise._id = id
-    //         res.json(exercise)
-    //       }
-    //     })
-    //   }
-    // })
-  // })
-  //       res.send("Could not find user");
-  //     }else{
-  //       const newExercise = new Exercise({
-  //         userId: id,
-  //         description,
-  //         duration,
-  //         date: new Date(date)
-  //       })
-  //       newExercise.save((err, data) => {
-  //         if(err || !data){
-  //           res.send("There was an error saving this exercise")
-  //         }else {
-  //           const { description, duration, date, _id} = data;
-  //           res.json({
-  //             username: userData.username,
-  //             description,
-  //             duration,
-  //             date: date.toDateString(),
-  //             _id: userData.id
-  //         })
-  //         }
-  //       })
-  //     }
-  //   })
-  // })
+  // #3
+
+app.get('/api/users/:_id/logs', (req, res) => {
+  const { from, to, limit } = req.query;
+  let idJson = { "id": req.params._id };
+  let idToCheck = idJson.id;
+
+  // Check ID
+  UserInfo.findById(idToCheck, (err, data) => {
+    var query = {
+      username: data.username
+    }
+
+    if (from !== undefined && to === undefined) {
+      query.date = { $gte: new Date(from)}
+    } else if (to !== undefined && from === undefined) {
+      query.date = { $lte: new Date(to) }
+    } else if (from !== undefined && to !== undefined) {
+      query.date = { $gte: new Date(from), $lte: new Date(to)}
+    }
+
+    let limitChecker = (limit) => {
+      let maxLimit = 100;
+      if (limit) {
+        return limit;
+      } else {
+        return maxLimit
+      }
+    }
+
+    if (err) {
+      console.log("error with ID=> ", err)
+    } else {
   
-  // app.get("/api/users/:id/logs", (req, res) =>{
-  //   const { from, to, limit } = req.query;
-  //   const {id} = req.params;
-  //   User.findById(id, (err, userData) => {
-  //     if(err || !userData){
-  //       res.send("Could not find user");
-  //     }else{
-  //       let dateObj = {}
-  //         if(from){
-  //           dateObj["$gte"] = new Date(from)
-  //         }
-  //         if(to){
-  //           dateObj["$lte"] = new Date(to)
-  //         }
-        
-  //       let filter = {
-  //         userId: id
-  //       }
-  //       if(from || to){
-  //         filter.date = dateObj
-  //       }
-  //       let nonNullLimit = limit ?? 500
-  //       Exercise.find(filter).limit(+nonNullLimit).exec((err, data) => {
-  //         if(err || !data){
-  //           res.json([])
-  //         }else{
-  //           const count = data.length
-  //           const rawLog = data
-  //           const {username, _id} = userData;
-  //           const log = rawLog.map((l) => ({
-  //             description: l.description,
-  //             duration: l.duration,
-  //             date: l.date.toDateString()
-  //           }))
-  //           res.json({username, count, _id, log})
-  //         }
-  //       })
-  //     }
-  //     })
-  // })
-
-  app.get('/mongo-health', (req, res) => {
-    res.json({ status: mongoose.connection.readyState
-    })
+      ExerciseInfo.find((query), null, {limit: limitChecker(+limit)}, (err, docs) => {
+        let loggedArray = [];
+        if (err) {
+          console.log("error with query=> ", err);
+        } else {
+  
+          let documents = docs;
+          let loggedArray = documents.map((item) => {
+            return {
+              "description": item.description,
+              "duration": item.duration,
+              "date": item.date.toDateString()
+            }
+          })
+  
+          const test = new LogInfo({
+            "username": data.username,
+            "count": loggedArray.length,
+            "log": loggedArray,
+          })
+  
+          test.save((err, data) => {
+            if (err) {
+              console.log("error saving exercise=> ", err)
+            } else {
+              console.log("saved exercise successfully");
+              res.json({
+                "_id": idToCheck,
+                "username": data.username,
+                "count": data.count,
+                "log": loggedArray
+              })
+            }
+          })
+        }
+      })
+    }
   })
+})
+
+  // #4
+app.get('/api/users', (req, res) => {
+  UserInfo.find({}, (err, data) => {
+    if (err) {
+      res.send("No Users");
+    } else {
+      res.json(data);
+    }
+  })
+})
+
+
+// // const userSchema = new Schema({
+// //   username: {
+// //     type: String,
+// //     required: true
+// //   },
+// //   log: [{
+// //     date: String,
+// //     duration: Number,
+// //     description: String
+// //   }],
+// //   count: Number
+// // });
+
+// // const User = mongoose.model("User", userSchema);
+// // // const Exercise = mongoose.model("Exercise", exerciseSchema);
+
+// // app.route("/api/users")
+// //   .post ((req, res) => {
+// //     const username = req.body.username
+// //     const user = new User ({ username, count: 0 })
+// //     user.save((err, data) => {
+// //       if (err) {
+// //         res.json({error: err})
+// //       }
+// //       res.json(data)
+// //     })
+// // })
+// //   .get((req, res) => {
+// //     User.find((err, data) => {
+// //       if (data) {
+// //         res.json(data)
+// //       }
+// //     })
+// //   })
+
+// //   app.post('/api/users/:_id/exercises', (req, res) =>{
+// //     const { description } = req.body
+// //     const duration = parseInt(req.body.duration)
+// //     // const date = req.body.bdate ? 'Mon Jan 01 1990' : 'Thu Nov 04 2021'
+// //     const date = req.body.date ? new Date(req.body.date).toDateString() : new Date().toDateString()
+// //     const id = req.params._id
+
+// //   const exercise = {
+// //     date,
+// //     duration,
+// //     description,
+// //   }
+
+// //     User.findByIdAndUpdate(id, { 
+// //       $push: { log: exercise }, 
+// //       $inc: {count: 1} 
+// //     }, {new:true}, (err, user) => {
+// //     if (user){
+// //       const updatedExercise = {
+// //         _id: id,
+// //         username: user.username,
+// //         ...exercise,
+// //       };
+// //       res.json(updatedExercise)
+// //     }
+// //     })
+// //   })
+
+
+// //   app.get('/api/users/:_id/logs', (req, res) => {
+// //     const { from, to, limit } = req.query
+
+// //     User.findById(req.params._id, (err, user) =>{
+// //       if (user) {
+// //         if (from || to || limit) {
+// //           const logs = user.log
+// //           const filteredLogs = logs
+// //         .filter(log => {
+// //           const formattedLogDate = (new Date(log.date))
+// //             .toISOString()
+// //             .split('T')[0]
+// //             return true
+// //         })
+       
+// //         const slicedLogs = limit ? filteredLogs.slice(0, limit) : filteredLogs
+// //         user.log = slicedLogs
+// //         }
+// //         res.json(user)
+// //       }
+// //     })
+// //   })
+
+// //   app.get('/mongo-health', (req, res) => {
+// //     res.json({ status: mongoose.connection.readyState
+// //     })
+// //   })
   
+
   // short url project
   let counter = 0;
   let shortenedUrls = {};

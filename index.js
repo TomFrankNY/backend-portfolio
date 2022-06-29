@@ -4,7 +4,7 @@
 // init project
 var express = require('express');
 var app = express();
-var port = process.env.PORT || 3000;
+// var port = process.env.PORT || 3000;
 // var bodyParser = require('body-parser');
 var isUrl = require('is-url');
 var cors = require('cors');

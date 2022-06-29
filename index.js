@@ -26,10 +26,7 @@ app.use(express.urlencoded({ extended: false }))
 app.use(express.json())
 
 // http://expressjs.com/en/starter/basic-routing.html
-app.get("/", function (req, res) {
-  res.sendFile(__dirname + '/views/index.html');
-});   
- 
+
   app.get("/timestamp", function (req, res) {
     res. sendFile(__dirname + '/views/timestamp.html');
   });
@@ -46,6 +43,10 @@ app.get("/", function (req, res) {
     res.sendFile(__dirname + '/views/exerciseTracker.html');
   });
   
+  app.get("/", function (req, res) {
+    res.sendFile(__dirname + '/views/index.html');
+  });   
+   
  
 
   // your first API endpoint... 

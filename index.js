@@ -4,7 +4,7 @@
 // init project
 var express = require('express');
 var app = express();
-var port = process.env.PORT || 3000;
+var port = process.env.PORT;
 var bodyParser = require('body-parser');
 var isUrl = require('is-url');
 var cors = require('cors');
@@ -402,6 +402,10 @@ app.get("/api/:date", function(req, res){
 //   console.log('Your app is listening on port ' + listener.address().port);
 // });
 
-const listener = app.listen(process.env.PORT || 3000, () => {
+const listener = app.listen(process.env.PORT, () => {
   console.log('Your app is listening on port ' + listener.address().port)
 })
+
+// const listener = app.listen(process.env.PORT || 3000, () => {
+//   console.log('Your app is listening on port ' + listener.address().port)
+// })

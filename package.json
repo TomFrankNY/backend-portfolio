@@ -22,9 +22,7 @@
 		 "got": "^11.3.0",
 		 "tape": "^4.7.0"
 	},
-	// "devDependencies": {
-		
-	// },
+	
 	"repository": {
 		"type": "git",
 		"url": "https://github.com/tomfrankny/timestamp"

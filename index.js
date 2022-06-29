@@ -15,8 +15,7 @@ require('dotenv').config()
 mongoose.connect(process.env.MONGO_URL, {
   useUnifiedTopology: true,
   useNewUrlParser: true,
-}, () => { console.log("Connected to MONGO BONGO DB")}
-);
+});
 // app.use(cors())
 app.use(cors({optionsSuccessStatus: 200}));  // some legacy browsers choke on 204
 app.use(express.static('public'));

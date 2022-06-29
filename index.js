@@ -9,13 +9,20 @@ var bodyParser = require('body-parser');
 var isUrl = require('is-url');
 var cors = require('cors');
 var mongoose = require('mongoose');
-const { Schema } = require('mongoose');
+var { Schema } = require('mongoose');
 require('dotenv').config()
 
 mongoose.connect(process.env.MONGO_URL, {
-  useUnifiedTopology: true,
   useNewUrlParser: true,
+  useUnifiedTopology: true,
+})
+.then(() => {
+  console.log('Database connected successfully!');
+})
+.catch((err) => {
+  console.log('Error connecting with error code:', err);
 });
+
 // app.use(cors())
 app.use(cors({optionsSuccessStatus: 200}));  // some legacy browsers choke on 204
 app.use(express.static('public'));
@@ -402,10 +409,14 @@ app.get("/api/:date", function(req, res){
 //   console.log('Your app is listening on port ' + listener.address().port);
 // });
 
-const listener = app.listen(process.env.PORT, () => {
-  console.log('Your app is listening on port ' + listener.address().port)
-})
-
-// const listener = app.listen(process.env.PORT || 3000, () => {
+// var listener = app.listen(process.env.PORT, () => {
 //   console.log('Your app is listening on port ' + listener.address().port)
 // })
+
+// app.listen(PORT, () => {
+// console.log('Server starts at port...');
+// }
+
+var listener = app.listen(process.env.PORT || 3000, () => {
+  console.log('Your app is listening on port ' + listener.address().port)
+})

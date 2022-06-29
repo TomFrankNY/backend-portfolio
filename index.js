@@ -20,7 +20,7 @@ mongoose.connect(process.env.MONGO_URL, {
 // app.use(cors())
 app.use(cors({optionsSuccessStatus: 200}));  // some legacy browsers choke on 204
 app.use(express.static('public'));
-// app.use(bodyParser.urlencoded({ extended: false}));
+app.use(bodyParser.urlencoded({ extended: false}));
 app.use('/public', express.static(`${process.cwd()}/public`));
 app.use(express.urlencoded({ extended: false }))
 // app.use(express.json())

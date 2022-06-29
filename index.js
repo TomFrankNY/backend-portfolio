@@ -43,9 +43,9 @@ app.use(express.json())
     res.sendFile(__dirname + '/views/exerciseTracker.html');
   });
   
-  // app.get("/", function (req, res) {
-  //   res.sendFile(__dirname + '/views/index.html');
-  // });   
+  app.get("/", function (req, res) {
+    res.sendFile(__dirname + '/views/index.html');
+  });   
    
  
 

@@ -17,8 +17,8 @@ mongoose.connect(process.env.MONGO_URL, {
   useNewUrlParser: true,
 }, () => { console.log("Connected to MONGO BONGO DB")}
 );
-app.use(cors())
-// app.use(cors({optionsSuccessStatus: 200}));  // some legacy browsers choke on 204
+// app.use(cors())
+app.use(cors({optionsSuccessStatus: 200}));  // some legacy browsers choke on 204
 app.use(express.static('public'));
 // app.use(bodyParser.urlencoded({ extended: false}));
 app.use('/public', express.static(`${process.cwd()}/public`));

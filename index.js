@@ -5,7 +5,7 @@
 var express = require('express');
 var app = express();
 var port = process.env.PORT || 3000;
-// var bodyParser = require('body-parser');
+var bodyParser = require('body-parser');
 var isUrl = require('is-url');
 var cors = require('cors');
 var mongoose = require('mongoose');

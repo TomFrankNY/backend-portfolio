@@ -409,14 +409,14 @@ app.get("/api/:date", function(req, res){
 //   console.log('Your app is listening on port ' + listener.address().port);
 // });
 
-// var listener = app.listen(process.env.PORT, () => {
-//   console.log('Your app is listening on port ' + listener.address().port)
-// })
+var listener = app.listen(process.env.PORT, () => {
+  console.log('Your app is listening on port ' + listener.address().port)
+})
 
 // app.listen(PORT, () => {
 // console.log('Server starts at port...');
 // }
 
-var listener = app.listen(process.env.PORT || 3000, () => {
-  console.log('Your app is listening on port ' + listener.address().port)
-})
+// var listener = app.listen(process.env.PORT || 3000, () => {
+  // console.log('Your app is listening on port ' + listener.address().port)
+// })

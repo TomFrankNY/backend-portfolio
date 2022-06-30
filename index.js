@@ -69,7 +69,7 @@ app.use(express.urlencoded({ extended: false }))
   
 // file Metadata Microservice
 
-app.post('/api/fileanalyse', upload.single('upfile'), (req, res) => {
+app.post('/fileMetadataMicroservice/api/fileanalyse', upload.single('upfile'), (req, res) => {
   res.json({
     name: req.file.originalname, 
     type: req.file.mimetype, 

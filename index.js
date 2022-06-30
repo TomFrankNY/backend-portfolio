@@ -5,12 +5,15 @@
 var express = require('express');
 var app = express();
 var port = process.env.PORT;
-var bodyParser = require('body-parser');
+var  bodyParser = require('body-parser');
 var isUrl = require('is-url');
 var cors = require('cors');
 var mongoose = require('mongoose');
 var { Schema } = require('mongoose');
 require('dotenv').config()
+var multer = require('multer')
+
+var upload = multer({ dest: 'uploads/' })
 
 mongoose.connect(process.env.MONGO_URL, {
   useNewUrlParser: true,
@@ -49,6 +52,10 @@ app.use(express.urlencoded({ extended: false }))
     res.sendFile(__dirname + '/views/exerciseTracker.html');
   });
   
+  app.get("/fileMetadataMicroservice", function (req, res) {
+    res.sendFile(__dirname + '/views/fileMetadataMicroservice.html');
+  });
+
   app.get("/", function (req, res) {
     res.sendFile(__dirname + '/views/index.html');
   });   
@@ -60,6 +67,17 @@ app.use(express.urlencoded({ extended: false }))
     res.json({greeting: 'hello API'});
   });
   
+// file Metadata Microservice
+
+app.post('/api/fileanalyse', upload.single('upfile'), (req, res) => {
+  res.json({
+    name: req.file.originalname, 
+    type: req.file.mimetype, 
+    size: req.file.size
+  })
+})
+
+
 // // exercise tracker project
 
 const userSchema = new Schema ({
@@ -409,14 +427,14 @@ app.get("/api/:date", function(req, res){
 //   console.log('Your app is listening on port ' + listener.address().port);
 // });
 
-var listener = app.listen(process.env.PORT, () => {
-  console.log('Your app is listening on port ' + listener.address().port)
-})
+// var listener = app.listen(process.env.PORT, () => {
+//   console.log('Your app is listening on port ' + listener.address().port)
+// })
 
 // app.listen(PORT, () => {
 // console.log('Server starts at port...');
 // }
 
-// var listener = app.listen(process.env.PORT || 3000, () => {
-  // console.log('Your app is listening on port ' + listener.address().port)
-// })
+var listener = app.listen(process.env.PORT || 3000, () => {
+  console.log('Your app is listening on port ' + listener.address().port)
+})
